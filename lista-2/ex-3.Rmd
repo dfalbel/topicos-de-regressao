@@ -1,0 +1,38 @@
+---
+title: "Exercício 3"
+output: pdf_document
+---
+
+```{r pacotes, echo=FALSE}
+library(xtable)
+library(knitr)
+```
+
+# Descrição
+
+No arquivo __imoveis.dat__ são apresentados dados relativos a uma amostra de 27 imóveis. Na ordem são apresentados os valores das seguintes variáveis:
+
+* imposto do imóvel (em 100 USD)
+* área do terreno (em 1000 pés quadrados)
+* área construída (em 1000 pés quadrados)
+* idade da residência (em anos)
+* preço de venda do imóvel (em 1000 USD)
+
+# Enunciado
+
+Ajuste um modelo normal linear do preço de venda contra as demais variáveis explicativas. Use o método AIC para selecionar as variáveis explicativas. Faça uma análise de diagnóstico com o modelo selecionado. Interprete os coeficientes estimados. Seja $y(z)$ o valor do preço de venda de um imóvel que não está na amostra com os valores das variáveis explciativas do modelo final representados por $z$. Como fica a estimativa intervalar de coeficiente $(1 - \alpha), 0 < \alpha < 1$, para $y(z)$? Alguma restrição para os valores de $z$?
+
+# Leitura dos dados
+
+Para ler os dados no R fazemos:
+
+```{r}
+imoveis <- data.frame(
+  scan("dados/imoveis.dat", list(imposto=0, areat=0, areac=0, idade=0, preco=0)))
+```
+
+```{r, echo=FALSE, results='asis'}
+kable(head(imoveis))
+```
+
+
