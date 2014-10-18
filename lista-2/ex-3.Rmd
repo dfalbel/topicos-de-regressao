@@ -7,7 +7,7 @@ output:
     fig_width: 3.84
 ---
 
-```{r pacotes, echo=FALSE, warning=FALSE}
+```{r pacotes, echo=FALSE, warning=FALSE, message=FALSE}
 library(xtable)
 library(knitr)
 library(ggplot2)
@@ -127,3 +127,25 @@ O modelo ajustado finalmente é dado pela seguinte equação:
 $$(preço)_i = `r coef(modelo)[1]`(imposto)_i + `r coef(modelo)[2]`(areac)_i$$
 
 Portanto, podemos dizer que com um aumento de 100 USD no imposto do imóvel, seu preço de venda aumenta em `r coef(modelo)[1]*1000` USD. Da mesma forma, com um aumento de 1000 pés quadrados de área construída, o preço do imóvel aumenta `r as.numeric(coef(modelo)[2]*1000)` USD.
+
+# Análise de diagnóstico
+
+## Gráfico Quantil-Quantil
+
+No gráfico quantil-quantil comparamos a distribuição dos resíduos com a distribuição normal. Esse gráfico indicará se a suposição de normalidade do modelo pode ou não ser aceita.
+
+```{r, fig.cap="Gráfico Quantil-Quantil dos resíduos do modelo ajustado.", fig.width=2.3,fig.height=2.3}
+source("../funcoes/envel_norm.R")
+envel_norm(modelo, imoveis) + xlab("Quantis da Normal") + ylab("Resíduo Studentizado")
+```
+
+Como todos os pontos estão dentro da banda de confiança, podemos concluir que a suposição de normalidade é aceitável neste modelo.
+
+
+
+
+
+
+
+
+
