@@ -2,15 +2,18 @@
 title: "Exercício 3"
 output:
   pdf_document:
-    fig_height: 4.6
-    fig_width: 4.8
+    fig_caption: yes
+    fig_height: 3.68
+    fig_width: 3.84
 ---
 
-```{r pacotes, echo=FALSE}
+```{r pacotes, echo=FALSE, warning=FALSE}
 library(xtable)
 library(knitr)
 library(ggplot2)
 library(tidyr)
+library(plyr)
+library(dplyr)
 ```
 
 # Descrição
@@ -42,10 +45,45 @@ kable(head(imoveis))
 
 # Análise descritiva
 
-```{r}
+```{r,fig.cap="Gráfico de dispersão da variável resposta 'Preço' por todas as variáveis explicativas."}
 df <- gather(imoveis, key = var, value = value, -preco)
 ggplot(df, aes(x=value, y=preco)) + geom_point() + stat_smooth(method = "lm", se = F) + 
   facet_wrap(~var, scales = "free") + xlab("Valor da variável") + ylab("Preço")
 ```
+
+Vemos na figura 1 que todas as variáveis apresentam relação linear com a variável resposta. Quanto maior o imposto ou área de terreno ou área construida, maior a preço do imóvel. E quanto maior a idade do imóvel menor o preço do imóvel.
+
+# Modelo
+
+Para selecionar as variáveis explicativas vamos usar o método AIC. Neste caso como o número de variáveis explicativas é baixo, vamos ajustar todos os modelos possíveis e depois escolher aquele com o maior AIC.
+
+Usando o código abaixo é possível ajustar todos os modelos com as variáveis do banco de dados.
+```{r, eval=FALSE}
+library(meifly)
+todos.modelos <- fitall(imoveis$preco, imoveis[,-5])
+variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
+                                                                  , collapse = ", ")))
+```
+
+```{r, echo = F, results='hide'}
+library(meifly)
+todos.modelos <- fitall(imoveis$preco, imoveis[,-5])
+```
+
+```{r, echo=FALSE,results='asis'}
+variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
+                                                               , collapse = ", ")))
+aux <- data.frame(cbind(variaveis, summary(todos.modelos))) %>% arrange(AIC)
+row.names(aux) <- NULL
+aux <- aux[,-c(2,9)]
+kable(aux)
+```
+
+Vemos pela tabela acima que o modelo com maior AIC é aquele com as variáveis 'imposto' e 'areac' (área construída). Coincidentemente este modelo também apresenta o maior $R^2$ ajustado.
+
+
+
+
+
 
 
