@@ -64,11 +64,9 @@ Usando o código abaixo é possível ajustar todos os modelos com as variáveis 
 ```{r, eval=FALSE}
 library(meifly)
 todos.modelos <- fitall(imoveis$preco, imoveis[,-5])
-variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
-                                                                  , collapse = ", ")))
 ```
 
-```{r, echo = F, results='hide'}
+```{r, echo = F, results='hide', message=FALSE}
 library(meifly)
 todos.modelos <- fitall(imoveis$preco, imoveis[,-5])
 ```
@@ -141,7 +139,9 @@ envel_norm(modelo, imoveis) + xlab("Quantis da Normal") + ylab("Resíduo Student
 
 Como todos os pontos estão dentro da banda de confiança, podemos concluir que a suposição de normalidade é aceitável neste modelo.
 
+## Outros gráficos
 
+Vamos analisar os demais gráficos de diagóstico de regressão.
 
 
 
