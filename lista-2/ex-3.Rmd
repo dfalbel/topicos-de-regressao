@@ -1,11 +1,16 @@
 ---
 title: "Exercício 3"
-output: pdf_document
+output:
+  pdf_document:
+    fig_height: 4.6
+    fig_width: 4.8
 ---
 
 ```{r pacotes, echo=FALSE}
 library(xtable)
 library(knitr)
+library(ggplot2)
+library(tidyr)
 ```
 
 # Descrição
@@ -33,6 +38,14 @@ imoveis <- data.frame(
 
 ```{r, echo=FALSE, results='asis'}
 kable(head(imoveis))
+```
+
+# Análise descritiva
+
+```{r}
+df <- gather(imoveis, key = var, value = value, -preco)
+ggplot(df, aes(x=value, y=preco)) + geom_point() + stat_smooth(method = "lm", se = F) + 
+  facet_wrap(~var, scales = "free") + xlab("Valor da variável") + ylab("Preço")
 ```
 
 
