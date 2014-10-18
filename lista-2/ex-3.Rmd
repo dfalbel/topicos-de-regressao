@@ -14,6 +14,9 @@ library(ggplot2)
 library(tidyr)
 library(plyr)
 library(dplyr)
+options(xtable.comment = FALSE,
+        digits = 2,
+        scipen=999)
 ```
 
 # Descrição
@@ -81,9 +84,46 @@ kable(aux)
 
 Vemos pela tabela acima que o modelo com maior AIC é aquele com as variáveis 'imposto' e 'areac' (área construída). Coincidentemente este modelo também apresenta o maior $R^2$ ajustado.
 
+Portanto o modelo linear normal escolhido pelo método AIC é da forma:
 
+$$(preço)_i = \beta_0 + \beta_1(imposto)_i + \beta_2(areac)_i + \epsilon_i$$
 
+Com $\epsilon_i \sim Normal(0, \sigma^2)$.
 
+O ajuste foi feito no R com o comando a seguir:
 
+```{r}
+modelo <- lm(preco ~ imposto + areac, data = imoveis)
+```
 
+E as estimativas estão apresentadas na tabela abaixo:
 
+```{r, results='asis', echo=FALSE}
+aux  <-  xtable(summary(modelo))
+row.names(aux) <- paste0("$\\beta_", 0:2, "$")
+colnames(aux) <- c("Estimativa", "Erro Padrão", "valor z", "Pr(>|t|)")
+print(aux, sanitize.text.function = function(x){x})
+```
+
+Como neste modelo o intercepto ($\beta_0$) não é significativo (valor-p = 0.73), vamos reajustar um modelo sem este parâmetro. O ajuste pode ser feito no R com o comando a seguir:
+
+```{r}
+modelo <- lm(preco ~ 0 + imposto + areac, data = imoveis)
+```
+
+As novas estimativas estão abaixo:
+
+```{r, results='asis', echo=FALSE}
+aux  <-  xtable(summary(modelo))
+row.names(aux) <- paste0("$\\beta_", 1:2, "$")
+colnames(aux) <- c("Estimativa", "Erro Padrão", "valor z", "Pr(>|t|)")
+print(aux, sanitize.text.function = function(x){x})
+```
+
+# Interpretação do modelo
+
+O modelo ajustado finalmente é dado pela seguinte equação:
+
+$$(preço)_i = `r coef(modelo)[1]`(imposto)_i + `r coef(modelo)[2]`(areac)_i$$
+
+Portanto, podemos dizer que com um aumento de 100 USD no imposto do imóvel, seu preço de venda aumenta em `r coef(modelo)[1]*1000` USD. Da mesma forma, com um aumento de 1000 pés quadrados de área construída, o preço do imóvel aumenta `r as.numeric(coef(modelo)[2]*1000)` USD.
