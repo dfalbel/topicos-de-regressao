@@ -11,9 +11,9 @@ output:
 library(xtable)
 library(knitr)
 library(ggplot2)
-library(tidyr)
 library(plyr)
 library(dplyr)
+library(tidyr)
 library(gridExtra)
 options(xtable.comment = FALSE,
         digits = 2,
@@ -44,4 +44,28 @@ No arquivo __dboston.dat__ é apresentado parte do conjunto de dados de uma amos
 dboston <- data.frame(scan("dados/dboston.dat", 
                            list(dist=0, tax=0, ptratio=0, lstat=0, medv=0)))
 ```
+
+```{r, echo=FALSE, results='asis'}
+xtable(head(dboston,n = 12))
+```
+
+# Análise descritiva
+
+```{r, fig.cap="Boxplots das variáveis do banco de dados", fig.height=3.5, echo=FALSE}
+dboston %>% gather(key = var, value = value) %>%
+  ggplot(aes(x = var, y = value)) + geom_boxplot() + facet_wrap(~var, scales = "free", ncol = 3) + xlab("Variável") + ylab("Valores")
+```
+
+
+```{r, fig.cap="Gráficos de dispersão das variáveis explicativas pela variável resposta", fig.height=3.5, echo=FALSE}
+dboston %>% gather(key = var, value = value, -medv) %>%
+  ggplot(aes(x = value, y = medv)) + geom_point() + stat_smooth(se = F, method = "loess") + facet_wrap(~var, scales = "free", ncol = 2) + xlab("Valor da Variável") + ylab("Preço mediano das residências")
+```
+
+```{r, fig.cap="Gráficos de dispersão das variáveis explicativas pela variável resposta", fig.height=3.5, echo=FALSE}
+ggplot(dboston, aes(medv)) + geom_histogram(aes(y = ..density..), binwidth = 4) + geom_density(colour = "blue") + ylab("Densidade de Frequência") + xlab("Preço mediano")
+```
+
+
+
 
