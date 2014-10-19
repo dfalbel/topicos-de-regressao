@@ -1,0 +1,47 @@
+---
+title: "Exercício 4"
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3.68
+    fig_width: 3.84
+---
+
+```{r pacotes, echo=FALSE, warning=FALSE, message=FALSE}
+library(xtable)
+library(knitr)
+library(ggplot2)
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(gridExtra)
+options(xtable.comment = FALSE,
+        digits = 2,
+        scipen=999)
+```
+
+# Descrição
+
+No arquivo __dboston.dat__ é apresentado parte do conjunto de dados de uma amostra aleatória de 506 setores censitários de 96 distritos da cidade de Boston (USA) em 1970. O obejtivo principal do estudo é tentar explicar a relação entre o preço mediano das residências ocupadas pelos propriietários em cada setor censitário com algumas variáveis explicativas. Vamos considerar apenas quatro variáveis explicativas que estão colocadas na seguinte ordem:
+
+* dist: disância ponderada do distrito a cinco centros de emprego de Boston (em milhas)
+* tax: imposto distrital anual do imóvel (por 10 mil USD)
+* ptratio: relação aluno-professor no distrito
+* lstat: porcentagem da população com baixa renda
+* medv: preço mediano das residências ocupadas pelos proprietários (em mil USD)
+
+# Enunciado
+
+* Faça inicialmente uma análise descritiva construindo por exemplo boxplots e diagramas de dispersão de cada variável explicativa contra a variável resposta.
+* Apresente também a densidade da variável resposta.
+* Para cada ligação (logarítimica, identidade e recíproca) proponha um modelo com resposta gama e selecione as variáveis explicativas usando o método AIC.
+* Através de procedimentoss de diagnóstico escolha um modelo.
+* interprete os parâmetros do modelo escolhido.
+
+# Leitura dos dados
+
+```{r}
+dboston <- data.frame(scan("dados/dboston.dat", 
+                           list(dist=0, tax=0, ptratio=0, lstat=0, medv=0)))
+```
+
