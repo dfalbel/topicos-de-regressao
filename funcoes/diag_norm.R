@@ -42,30 +42,21 @@ diag_norm <- function(fit.model, dados){
   indice <- 1:length(h)
   #par(mfrow=c(2,2))
   cut = 2*p/n
-  p1 <- qplot(y=h, x=indice, geom = "point") + geom_hline(aes(yintercept = 2*p/n)) + ylim(0,1) + geom_text(hjust=0, vjust=0, aes(x = indice[h>cut], y = h[h>cut], label = indice[h>cut]))
-  return(p1)
-  cut <- 2*p/n
-  abline(cut,0,lty=2)
+  p1 <- qplot(y=h, x=indice, geom = "point") + geom_hline(aes(yintercept = 2*p/n)) + ylim(0,1) + geom_text(hjust=0, vjust=0, aes(x = indice[h>cut], y = h[h>cut], label = indice[h>cut])) + xlab("Índice")
   #identify(h, n=1)
   #title(sub="(a)")
   #
-  plot(di,xlab="Índice", ylab="Distância de Cook", pch=16)
+  p2 <- qplot(x = indice, y = di, geom = "point") + xlab("Índice") + ylab("Distância de Cook")
   #identify(di, n=2)
   #
-  plot(tsi,xlab="Índice", ylab="Resíduo Padronizado",
-       ylim=c(b-1,a+1), pch=16)
-  abline(2,0,lty=2)
-  abline(-2,0,lty=2)
-  #identify(tsi, n=1)
-  #
-  plot(fitted(fit.model),tsi,xlab="Valor Ajustado", 
-       ylab="Resíduo Padronizado", ylim=c(b-1,a+1), pch=16)
-  abline(2,0,lty=2)
-  abline(-2,0,lty=2)
-  #identify(fitted(fit.model),tsi, n=1)
-  par(mfrow=c(1,1))
-  #---------------------------------------------------------------#
   
+  p3 <- qplot(x = indice, y = tsi, geom = "point") + geom_hline(aes(yintercept = c(-2,2))) + xlab("Índice") + ylab("Resíduo Padronizado") #+ geom_text(hjust = 0, vjust = 0, aes(x = indice[tsi <(-2) | tsi >2], y = tsi[tsi>2 | tsi < -2]))
+  
+  
+  p4 <- qplot(x = fitted(fit.model), y = tsi, geom = "point") + xlab("Valor Ajustado") + ylab("Resíduo Padronizado") + geom_hline(aes(yintercept = c(-2,2)))
+  
+  
+  grid.arrange(p1, p2, p3, p4, nrow = 2)
   
 }
 

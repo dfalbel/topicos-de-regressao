@@ -14,6 +14,7 @@ library(ggplot2)
 library(tidyr)
 library(plyr)
 library(dplyr)
+library(gridExtra)
 options(xtable.comment = FALSE,
         digits = 2,
         scipen=999)
@@ -31,7 +32,10 @@ No arquivo __imoveis.dat__ são apresentados dados relativos a uma amostra de 27
 
 # Enunciado
 
-Ajuste um modelo normal linear do preço de venda contra as demais variáveis explicativas. Use o método AIC para selecionar as variáveis explicativas. Faça uma análise de diagnóstico com o modelo selecionado. Interprete os coeficientes estimados. Seja $y(z)$ o valor do preço de venda de um imóvel que não está na amostra com os valores das variáveis explciativas do modelo final representados por $z$. Como fica a estimativa intervalar de coeficiente $(1 - \alpha), 0 < \alpha < 1$, para $y(z)$? Alguma restrição para os valores de $z$?
+* Ajuste um modelo normal linear do preço de venda contra as demais variáveis explicativas. 
+* Use o método AIC para selecionar as variáveis explicativas. Faça uma análise de diagnóstico com o modelo selecionado. 
+* Interprete os coeficientes estimados. 
+* Seja $y(z)$ o valor do preço de venda de um imóvel que não está na amostra com os valores das variáveis explicativas do modelo final representados por $z$. Como fica a estimativa intervalar de coeficiente $(1 - \alpha), 0 < \alpha < 1$, para $y(z)$? Alguma restrição para os valores de $z$?
 
 # Leitura dos dados
 
@@ -132,7 +136,7 @@ Portanto, podemos dizer que com um aumento de 100 USD no imposto do imóvel, seu
 
 No gráfico quantil-quantil comparamos a distribuição dos resíduos com a distribuição normal. Esse gráfico indicará se a suposição de normalidade do modelo pode ou não ser aceita.
 
-```{r, fig.cap="Gráfico Quantil-Quantil dos resíduos do modelo ajustado.", fig.width=2.3,fig.height=2.3}
+```{r, fig.cap="Gráfico Quantil-Quantil dos resíduos do modelo ajustado.", fig.width=2.7,fig.height=2.7}
 source("../funcoes/envel_norm.R")
 envel_norm(modelo, imoveis) + xlab("Quantis da Normal") + ylab("Resíduo Studentizado")
 ```
@@ -143,9 +147,25 @@ Como todos os pontos estão dentro da banda de confiança, podemos concluir que 
 
 Vamos analisar os demais gráficos de diagóstico de regressão.
 
+```{r, fig.cap="Gráfico Quantil-Quantil dos resíduos do modelo ajustado.", fig.height=4.3, fig.width=4.3}
+source("../funcoes/diag_norm.R")
+diag_norm(modelo, imoveis)
+```
 
+No gráfico acima podemos ver  que a obbservaão  27 tem grande influência nas estimativas dos parâmetros. Os resíduos parecem ser aleatórios, indicando que as observações parecem ser independentes. Além disso, no gráficos dos valores ajustados pelos resíduos, não parece existir nenhum padrão indicando que a amostra é homocedástica.
 
+Vamos ajustar o modelo retirando a observação número 27, para verificar se existem grandes alterações nos parâmetros.
 
+```{r}
+modelo.sem27 <- lm(preco ~ 0 + imposto + areac, data = imoveis[-27,])
+```
+
+```{r, echo=FALSE, results='asis'}
+aux <- cbind(coef(modelo), coef(modelo.sem27))
+row.names(aux) <- paste0("$\\beta_", 1:2, "$")
+colnames(aux) <- c("Est.", "Est s/ obs 27")
+print(xtable(aux), sanitize.text.function = function(x){x})
+```
 
 
 
