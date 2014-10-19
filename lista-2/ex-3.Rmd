@@ -88,7 +88,7 @@ Vemos pela tabela acima que o modelo com maior AIC é aquele com as variáveis '
 
 Portanto o modelo linear normal escolhido pelo método AIC é da forma:
 
-$$(preço)_i = \beta_0 + \beta_1(imposto)_i + \beta_2(areac)_i + \epsilon_i$$
+$$(preço)_i =    \beta_0 + \beta_1(imposto)_i + \beta_2(areac)_i + \epsilon_i$$
 
 Com $\epsilon_i \sim Normal(0, \sigma^2)$.
 
@@ -152,7 +152,7 @@ source("../funcoes/diag_norm.R")
 diag_norm(modelo, imoveis)
 ```
 
-No gráfico acima podemos ver  que a obbservaão  27 tem grande influência nas estimativas dos parâmetros. Os resíduos parecem ser aleatórios, indicando que as observações parecem ser independentes. Além disso, no gráficos dos valores ajustados pelos resíduos, não parece existir nenhum padrão indicando que a amostra é homocedástica.
+Na figura 3 podemos ver  que a obbservação  27 tem grande influência nas estimativas dos parâmetros. Os resíduos parecem ser aleatórios, indicando que as observações parecem ser independentes. Além disso, no gráficos dos valores ajustados pelos resíduos, não parece existir nenhum padrão indicando que a amostra é homocedástica.
 
 Vamos ajustar o modelo retirando a observação número 27, para verificar se existem grandes alterações nos parâmetros.
 
@@ -166,6 +166,29 @@ row.names(aux) <- paste0("$\\beta_", 1:2, "$")
 colnames(aux) <- c("Est.", "Est s/ obs 27")
 print(xtable(aux), sanitize.text.function = function(x){x})
 ```
+
+As estimativas dos parâmetros não se alteram fortemente, portanto optamos por não retirar esta observação da amostra.
+
+
+# Estimativa Inntervalar para um imóvel fora da amostra
+
+Supondo que um imóvel tenha um imposto representado por $z_1$ e uma área construida representada por $z_2$, uma estimativa intervalar para o seu preço de venda ($y$) pode ser dada por:
+
+
+```{r, echo=FALSE}
+sigma <- var(resid(modelo))*(nrow(imoveis)-1)/(nrow(imoveis) - 2)
+```
+
+
+$$\hat{y} = `r coef(modelo)[1]`*z_1 + `r coef(modelo)[2]`*z_2 \pm \sqrt{`r sigma`(1 + z'(X^tX)^{-1}z)}$$
+
+É importante que o vetor $z$ esteja na região conjunta dos dados originais, usados para estimar os parâmetros do modelo. No caso a região é apresentada na figura abaixo:
+
+```{r, echo=FALSE, fig.cap="Região conjunta dos dados originais"}
+ggplot(imoveis, aes(x = imposto, y = areac)) +  geom_density2d()
+```
+
+Pontos fora da área azul seriam considerados extrapolações e é possível que as previsões feitas pelo modelo estejam erradas.
 
 
 
