@@ -71,11 +71,23 @@ ggplot(dboston, aes(medv)) + geom_histogram(aes(y = ..density..), binwidth = 4) 
 
 A densidade da variável resposta __medv__ (figura 3) é assimétrica a esquerda, assemelhando-se à distribuição Gama.
 
-# Modelos
+# Modelo
 
-# Ligação logarítimica
+## Ligação logarítimica
 
-Como o número de variáveis é muito pequeno, vamos ajustar todos os modelos possíveis e escolher aquele que tiver o maior AIC. Os modelos estão apresentados na tabela abaixo.
+### Descrição do modelo
+
+O modelo que será ajustado é de regressão Gamma com ligação logarítmmica. Ele é da forma:
+
+$$y_i \sim Gama(\mu_i, \phi)$$
+
+De forma que:
+
+$$\log (\mu_i)   =   x_i\beta$$
+
+### Seleção das variáveis
+
+Como o número de variáveis explicativas é pequeno, vamos ajustar todos os modelos possíveis e escolher aquele que tiver o maior AIC. Os modelos estão apresentados na tabela abaixo.
 
 ```{r, eval=FALSE}
 todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
@@ -98,6 +110,25 @@ row.names(aux) <- NULL
 aux <- aux[,-c(2,7)]
 kable(aux)
 ```
+
+O modelo com maior AIC é o modelo com todas as variáveis explicativas do banco de dados: __dist__, __tax__, __ptratio__ e __lstat__. Mas pelo princípio de parcimônia vamos usar um modelo com menos variáveis que também tem o AIC alto, este modelo tem as seguitnes variáveis: __dist__, __ptratio__ e __lstat__.
+
+Este modelo pode ser ajustado no `R` usando o seguinte comando:
+
+```{r}
+modelo <- glm(medv ~ dist + ptratio + lstat, data = dboston, 
+              family = Gamma(link = "log"))
+```
+
+
+
+### Análise de Diagnóstico
+
+```{r, fig.cap="Gráfico Quantil-Quantil", fig.height=2.3, fig.width=2.3, echo=FALSE}
+source("../funcoes/envel_gama.R")
+envel_gama(modelo, dboston) + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
+```
+
 
 
 
