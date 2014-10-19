@@ -17,7 +17,7 @@
 # family= Gamma(link=identity) no caso de ligação identidade.
 #------------------------------------------------------------#
 envel_gama <- function(fit.model, dados){
-  X <- model.matrix(fit.model, data = dados)
+  X <- model.matrix(fit.model, data = dados, f.link = "log")
   n <- nrow(X)
   p <- ncol(X)
   w <- fit.model$weights
@@ -34,7 +34,7 @@ envel_gama <- function(fit.model, dados){
   for(i in 1:100){
     resp <- rgamma(n,fi)
     resp <- (fitted(fit.model)/fi)*resp
-    fit <- glm(resp ~ X, family=Gamma(link=log))
+    fit <- glm(resp ~ X, family=Gamma(link=f.link))
     w <- fit$weights
     W <- diag(w)
     H <- solve(t(X)%*%W%*%X)
