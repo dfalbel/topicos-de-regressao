@@ -126,7 +126,7 @@ modelo <- glm(medv ~ dist + ptratio + lstat, data = dboston,
 
 ```{r, fig.cap="Gráfico Quantil-Quantil", fig.height=2.3, fig.width=2.3, echo=FALSE}
 source("../funcoes/envel_gama.R")
-envel_gama(modelo, dboston) + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
+envel_gama(modelo, dboston, link = "log") + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
 ```
 
 
