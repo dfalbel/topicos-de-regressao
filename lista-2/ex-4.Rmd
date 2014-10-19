@@ -46,16 +46,19 @@ dboston <- data.frame(scan("dados/dboston.dat",
 ```
 
 ```{r, echo=FALSE, results='asis'}
-xtable(head(dboston,n = 12))
+xtable(head(dboston,n = 5))
 ```
 
 # Análise descritiva
+
+Abaixo estão os boxplots (figura 1) de todas as variáveis do banco de dados. Vemos pelos gráficos que as variáveis parecem apresentar distribuição ligeiramente assimétrica.
 
 ```{r, fig.cap="Boxplots das variáveis do banco de dados", fig.height=3.5, echo=FALSE}
 dboston %>% gather(key = var, value = value) %>%
   ggplot(aes(x = var, y = value)) + geom_boxplot() + facet_wrap(~var, scales = "free", ncol = 3) + xlab("Variável") + ylab("Valores")
 ```
 
+Nos gráficos de dispersão (figura 2) das variáveis pela variável resposta. Principalemente as variáveis __dist__ e __lstat__ têm relação forte e não linear com o preço dos imóveis. Já as variáveis __tax__ e __ptratio__ parecem apresentar umma relação linear com o preço mediano.
 
 ```{r, fig.cap="Gráficos de dispersão das variáveis explicativas pela variável resposta", fig.height=3.5, echo=FALSE}
 dboston %>% gather(key = var, value = value, -medv) %>%
@@ -65,6 +68,38 @@ dboston %>% gather(key = var, value = value, -medv) %>%
 ```{r, fig.cap="Gráficos de dispersão das variáveis explicativas pela variável resposta", fig.height=3.5, echo=FALSE}
 ggplot(dboston, aes(medv)) + geom_histogram(aes(y = ..density..), binwidth = 4) + geom_density(colour = "blue") + ylab("Densidade de Frequência") + xlab("Preço mediano")
 ```
+
+A densidade da variável resposta __medv__ (figura 3) é assimétrica a esquerda, assemelhando-se à distribuição Gama.
+
+# Modelos
+
+# Ligação logarítimica
+
+Como o número de variáveis é muito pequeno, vamos ajustar todos os modelos possíveis e escolher aquele que tiver o maior AIC. Os modelos estão apresentados na tabela abaixo.
+
+```{r, eval=FALSE}
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "log"))
+```
+
+
+```{r, echo=FALSE, message=FALSE, results='hide'}
+library(meifly)
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "log"))
+```
+
+
+```{r, echo=FALSE,results='asis'}
+variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
+                                                               , collapse = ", ")))
+aux <- data.frame(cbind(variaveis, summary(todos.modelos))) %>% arrange(AIC)
+row.names(aux) <- NULL
+aux <- aux[,-c(2,7)]
+kable(aux)
+```
+
+
 
 
 
