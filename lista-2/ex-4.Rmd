@@ -129,6 +129,152 @@ source("../funcoes/envel_gama.R")
 envel_gama(modelo, dboston, link = "log") + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
 ```
 
+No gráfico quantil-quantil (figura 4) podemos ver que alguns pontos da cauda saem bastante da banda de confiança, indicando que a suposição de distribuição Gamma no modelo não é válida.
+
+```{r, fig.cap="Gráficos de diagnóstico", echo=FALSE, message=FALSE, warning=FALSE}
+source("../funcoes/diag_gama.R")
+diag_gama(modelo, dboston)
+```
+
+
+Nos gráficos da figura 5 vemos não existe nenhum ponto com influência elevada. No gráfico do Valor ajustado pelo componente do desvio, vemos que são poucos os pontos que saem do intervalo $[-2,2]$ indicando que o ajuste está razoável. Além disso no gráfico de da variável z pelo preditor linear verificamos uma tendência linear indicando que a função de ligação escolhida é adequada.
+
+
+## Ligação identidade
+
+
+O modelo que será ajustado é de regressão Gamma com ligação logarítmmica. Ele é da forma:
+
+$$y_i \sim Gama(\mu_i, \phi)$$
+
+De forma que:
+
+$$\mu_i   =   x_i\beta$$
+
+### Seleção das variáveis
+
+Como o número de variáveis explicativas é pequeno, vamos ajustar todos os modelos possíveis e escolher aquele que tiver o maior AIC. Os modelos estão apresentados na tabela abaixo.
+
+```{r, eval=FALSE}
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "identity"))
+```
+
+
+```{r, echo=FALSE, message=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(meifly)
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "identity"))
+```
+
+
+```{r, echo=FALSE,results='asis'}
+variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
+                                                               , collapse = ", ")))
+aux <- data.frame(cbind(variaveis, summary(todos.modelos))) %>% arrange(AIC)
+row.names(aux) <- NULL
+aux <- aux[,-c(2,7)]
+kable(aux)
+```
+
+O modelo com maior AIC é o modelo com todas as variáveis explicativas do banco de dados: __dist__, __tax__, __ptratio__ e __lstat__. Mas pelo princípio de parcimônia vamos usar um modelo com menos variáveis que também tem o AIC alto, este modelo tem as seguitnes variáveis: __tax__, __ptratio__ e __lstat__.
+
+Este modelo pode ser ajustado no `R` usando o seguinte comando:
+
+```{r}
+modelo <- glm(medv ~ tax + ptratio + lstat, data = dboston, 
+              family = Gamma(link = "identity"))
+```
+
+### Análise de Diagnóstico
+
+```{r, fig.cap="Gráfico Quantil-Quantil", fig.height=2.3, fig.width=2.3, echo=FALSE}
+source("../funcoes/envel_gama.R")
+envel_gama(modelo, dboston, link = "identity") + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
+```
+
+No gráfico quantil-quantil (figura 6) podemos ver que muitos pontos saem da banda de confiança, indicando que a suposição de distribuição Gamma não é válida.
+
+
+```{r, fig.cap="Gráficos de diagnóstico", echo=FALSE, message=FALSE, warning=FALSE}
+source("../funcoes/diag_gama.R")
+diag_gama(modelo, dboston)
+```
+
+
+Nos gráficos da figura 7 vemos não existe nenhum ponto com influência elevada. No gráfico do Valor ajustado pelo componente do desvio, vemos que são poucos os pontos que saem do intervalo $[-2,2]$ indicando que o ajuste está razoável. Além disso no gráfico de da variável z pelo preditor linear verificamos uma tendência linear indicando que a função de ligação escolhida é adequada.
+
+## Ligação recíproca
+
+
+O modelo que será ajustado é de regressão Gamma com ligação logarítmmica. Ele é da forma:
+
+$$y_i \sim Gama(\mu_i, \phi)$$
+
+De forma que:
+
+$$\mu_i   =   \frac{1}{x_i\beta}$$
+
+### Seleção das variáveis
+
+Como o número de variáveis explicativas é pequeno, vamos ajustar todos os modelos possíveis e escolher aquele que tiver o maior AIC. Os modelos estão apresentados na tabela abaixo.
+
+```{r, eval=FALSE}
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "inverse"))
+```
+
+
+```{r, echo=FALSE, message=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(meifly)
+todos.modelos <- fitall(y = dboston$medv, x = dboston[,1:4], method = "glm",
+                        family = Gamma(link = "inverse"))
+```
+
+
+```{r, echo=FALSE,results='asis'}
+variaveis <- laply(todos.modelos, .fun = function(x) return(paste(names(x$coefficients)
+                                                               , collapse = ", ")))
+aux <- data.frame(cbind(variaveis, summary(todos.modelos))) %>% arrange(AIC)
+row.names(aux) <- NULL
+aux <- aux[,-c(2,7)]
+kable(aux)
+```
+
+O modelo com maior AIC é o modelo com todas as variáveis explicativas do banco de dados: __dist__, __tax__, __ptratio__ e __lstat__. Mas pelo princípio de parcimônia vamos usar um modelo com menos variáveis que também tem o AIC alto, este modelo tem as seguitnes variáveis: __dist__, __ptratio__ e __lstat__.
+
+Este modelo pode ser ajustado no `R` usando o seguinte comando:
+
+```{r}
+modelo <- glm(medv ~ dist + ptratio + lstat, data = dboston, 
+              family = Gamma(link = "inverse"))
+```
+
+### Análise de Diagnóstico
+
+```{r, fig.cap="Gráfico Quantil-Quantil", fig.height=2.3, fig.width=2.3, echo=FALSE}
+source("../funcoes/envel_gama.R")
+envel_gama(modelo, dboston, link = "inverse") + xlab("Percentis da Normal") + ylab("Componentes do Desvio")
+```
+
+No gráfico quantil-quantil (figura 8) podemos ver que muitos pontos saem da banda de confiança, indicando que a suposição de distribuição Gamma não é válida.
+
+
+```{r, fig.cap="Gráficos de diagnóstico", echo=FALSE, message=FALSE, warning=FALSE}
+source("../funcoes/diag_gama.R")
+diag_gama(modelo, dboston)
+```
+
+
+Nos gráficos da figura 9 vemos não existe nenhum ponto com influência elevada. No gráfico do Valor ajustado pelo componente do desvio, vemos que são poucos os pontos que saem do intervalo $[-2,2]$ indicando que o ajuste está razoável. Além disso no gráfico de da variável z pelo preditor linear verificamos uma tendência linear indicando que a função de ligação escolhida é adequada.
+
+## Modelo escolhido
+
+Escolhemos como modelo final aquele com lição $\log$, uma vez que  
+
+
+
+
 
 
 
