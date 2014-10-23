@@ -94,7 +94,8 @@ Os parâmetros do modelo indicam que quanto maior o escore do indivíduo no test
 A banda de confiança da probabilidade de apresentar os sintomas dado o escore no teste psicológico está apresentada na figura 2.
 
 ```{r, fig.cap="Banda de 95% de confiança da probabilidade de apresentar sintomas"}
-ggplot(caduquice, aes(y = resp, x = escore)) + stat_smooth(method = "glm", family = binomial(link = logit))
+ggplot(caduquice, aes(y = resp, x = escore)) + 
+  stat_smooth(method = "glm", family = binomial(link = logit))
 ```
 
 # Análise de diagnóstico
