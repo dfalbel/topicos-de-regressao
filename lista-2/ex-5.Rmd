@@ -1,0 +1,127 @@
+---
+title: "Exercício 5"
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3.68
+    fig_width: 3.84
+---
+
+```{r pacotes, echo=FALSE, warning=FALSE, message=FALSE}
+library(xtable)
+library(knitr)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+options(xtable.comment = FALSE,
+        digits = 2,
+        scipen=999)
+```
+
+# Descrição
+
+No arquivo __caduquice.dat__ são descritos os dados de um experimento em que cinquenta e quatro indivíduos considerados idosos são submetidos a um exame psicológico para avaliar a ocorrência ou não de sintoma de caduquice. Acredita-se que o escore obtido num exame psicológico feito previamente esteja associado com a ocorrência ou não do sintoma. Os dados são apresentados na seguinte ordem:
+
+* escore: escala no exame psicológico
+* resp: ocorrência (resp = 1) ou não ocorrência (resp = 0) do sintoma.
+
+
+# Enunciado
+
+* Faça inicialmente uma análise descritiva dos dados.
+* Ajuste um modelo logístico para explicar a probabilidade de ocorrência do sintoma em função do escore.
+* Interprete os resultados.
+* Construa uma banda de confiança de 95% para a probabilidade de ocorrência do sintoma de caduquice dado o escore no exame psicológico.
+* Faça uma análise de diagnóstico do modelo ajustado.
+
+# Leitura dos dados
+
+```{r}
+caduquice <- data.frame(scan("dados/caduquice.dat", 
+                                        list(escore=0, resp=0)))
+
+```
+
+```{r, echo=FALSE, results='asis'}
+xtable(head(caduquice,n = 5))
+```
+
+# Análise descritiva
+
+Na figura 1 apresentamos um boxplot do escore para os indivíduos que tiveram ocorrência dos sintomas e um outro para os indivíduos que não tiveram ocorrência do evento.
+
+```{r, fig.cap="Boxplots do escore", fig.height=3.5, echo=FALSE}
+ggplot(caduquice, aes(x = as.factor(resp), y = escore)) + geom_boxplot() + xlab("Ocorrência dos sintomas (0 indica não, 1 indica sim)")
+
+```
+
+Neste gráfico é possível ver que os indivíduos que apresentaram os sintomas de caduquice tiveram aparentemente escores menores no teste psicológico.
+
+
+# Modelo
+
+Vamos ajustar um modelo logístico que pode ser expresso da seguinte forma:
+
+$$resp_i \sim Bernouli(p_i)$$
+
+com:
+
+$$\log\left( \frac{p_i}{1 - p_i} \right) = \alpha + \beta*escore_i$$
+
+Este modelo pode ser ajustado no `R` usando o comando a seguir:
+
+```{r}
+modelo <- glm(resp ~ escore, family=binomial(link = "logit") ,data=caduquice)
+```
+
+As estimativas do modelo estão na tabela abaixo.
+
+```{r, echo=FALSE, results='asis'}
+aux  <-  xtable(summary(modelo))
+row.names(aux) <- c("$\\alpha$", "$\\beta$")
+colnames(aux) <- c("Estimativa", "Erro Padrão", "valor z", "Pr(>|t|)")
+print(aux, sanitize.text.function = function(x){x})
+```
+
+# Interpretação
+
+Os parâmetros do modelo indicam que quanto maior o escore do indivíduo no teste psicológico, menor a chance de apresentar sintomas de caduquice. Mais precisamente, podemos dizer que com um aumento de uma unidade no escore do paciente, a chance é  72% da chance de um paciente com o escore de uma unidade menor.
+
+# Banda de confiança da probabilidade
+
+A banda de confiança da probabilidade de apresentar os sintomas dado o escore no teste psicológico está apresentada na figura 2.
+
+```{r, fig.cap="Banda de 95% de confiança da probabilidade de apresentar sintomas"}
+ggplot(caduquice, aes(y = resp, x = escore)) + stat_smooth(method = "glm", family = binomial(link = logit))
+```
+
+# Análise de diagnóstico
+
+Pelo gráfico da figura 3 vemos que a suposição do modelo de que os dados seguem uma distribuição de Bernouli é razoável e pode ser aceita.
+
+```{r, fig.cap="Gráfico Quantil-Quantil", echo=FALSE}
+source("../funcoes/envel_bino.R")
+envel_bino(modelo, caduquice)
+```
+
+
+```{r, fig.cap="Gráficos de Diagnóstico", fig.height=4.5, fig.width=4.5, echo=FALSE}
+source("../funcoes/diag_bino.R")
+diag_bino(modelo, caduquice)
+```
+
+Pelos demais gráficos (figura 4) vemos que o modelo parece estar bem ajustado:
+
+* os resíduos não apresentam nenhum padrão, indicando que não existe correlação entre as observações.
+* não existe nenhuma observação com altíssima influência o que poderia causar instabilidade nos parâmetros.
+* os resíduos tem valores entre -2 e 2, o que é considerado aceitável.
+
+
+
+
+
+
+
+
