@@ -170,7 +170,7 @@ print(xtable(aux), sanitize.text.function = function(x){x})
 As estimativas dos parâmetros não se alteram fortemente, portanto optamos por não retirar esta observação da amostra.
 
 
-# Estimativa Inntervalar para um imóvel fora da amostra
+# Estimativa Intervalar para um imóvel fora da amostra
 
 Supondo que um imóvel tenha um imposto representado por $z_1$ e uma área construida representada por $z_2$, uma estimativa intervalar para o seu preço de venda ($y$) pode ser dada por:
 
