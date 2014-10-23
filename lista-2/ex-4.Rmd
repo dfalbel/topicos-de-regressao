@@ -270,7 +270,21 @@ Nos gráficos da figura 9 vemos não existe nenhum ponto com influência elevada
 
 ## Modelo escolhido
 
-Escolhemos como modelo final aquele com lição $\log$, uma vez que  
+Escolhemos como modelo final aquele com lição $\log$, uma vez que é o modelo que apresenta menor afastamento das suposições do modelo. No entanto, alguns gráficos de diagnóstico estão indicando que ele pode não estar bem ajustado então em uma próxima análise propomos realizar alguma transformações nas variáveis, ou então ajustar outro modelo para dados assimétricos como o modelo normal inverso.
+
+
+## Interpretação dos parâmetros:
+
+* $\beta_0$ é o intercepto do modelo, é o logaritmo do preço mediano esperado de um imóvel que tenha todas as outras variáveis com valor igual a zero. (sem imposto, com taxa professor/aluno igual a zero e porcentagem de população de baixa renda igual a zero.)
+
+* $\beta_1$ é a variação esperada no preço mediano do imóvel quando a distância aumenta em uma unidade.
+
+* $\beta_2$ é a variação esperada no preço mediano do imóvel quando taxa professor/aluno aumenta em uma unidade.
+
+* $\beta_3$ é a variação esperada no preço mediano do imóvel quando a porcentagem de habitantes de baixa renda aumenta em uma unidade.
+
+
+
 
 
 
