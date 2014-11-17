@@ -83,6 +83,7 @@ A tabela a seguir apresenta as estimativas dos parâmetros do modelo escolhido. 
 xtable(summary(modelo.poisson.r))
 ```
 
+Apesar do parâmetro relacionado a variável 'wind' não ser significativo, continuaremos deixando-o no modelo, pois utilizamos o método AIC para selecionar as variáveis.
 A seguir fizemos alguns gráficos de diagnóstico a fim de verificar a qualidade do ajuste.
 
 ```{r, echo=FALSE, fig.cap="Gráficos de diagnóstico do modelo poisson reduzido.", fig.height=4.3, fig.width=4.3}
@@ -101,11 +102,43 @@ Os gráficos de diagnóstico evidenciam um ajuste adequado do modelo Poisson. No
 
 # Modelo Binomial-Negativo
 
+O modelo binomial negativo foi ajustado no `R` usando a função `glm.nb` do pacote `MASS`. A seleção das variáveis explicativas também foi realizada utilizando o método `AIC` _backward_. Selecionamos aquele modelo com o menor AIC.
+
+```{r, message=FALSE, results='hide'}
+library(MASS)
+modelo.binomialn.c <- glm.nb(O3 ~ vh + wind + humidity + temp + ibh + dpg + ibt + vis + doy,
+                      data = ozone)
+modelo.binomialn.r <- step(object = modelo.binomialn.c)
+```
+
+Pelo método stepAIC selecionamos as variáveis ibt, vis, ibh, doy, humidity e temp como variáveis explicativas do modelo. As estimativas dos parâmetros encontram-se na tabela a seguir.
+
+```{r, echo = F, results = 'asis'}
+xtable(summary(modelo.binomialn.r))
+```
+
+Novamente, vamos fazer alguns gráficos de diagnóstico para verificar a adequabilidade do ajuste do modelo binomial negativo.
+Inicialmente fizemos o gráfico quantil-quantil, que verifica se a distribuição escolhida se ajusta aos dados.
+
+```{r, echo=FALSE, fig.cap = "Gráfico Quantil-Quantil do modelo binomial negativo reduzido", message=FALSE, warning=FALSE}
+source(file = "../funcoes/envel_nbin.R")
+envel_nbin(modelo.binomialn.r, ozone)
+```
+
+Vemos no gráfico que todos os pontos estão dentro da banda de confiança, idicando que o ajuste está correto.
+Em seguida fizemos mais alguns gráficos, que ajudam a identificar pontos discrepantes, aberrantes ou influentes que podem causar problemas nas estimativas dos parâmetros do modelo.
+
+```{r, echo=FALSE, fig.cap = "Gráficos de diagnóstico negativo binomial reduzido", fig.height = 4.3, fig.width=4.3}
+source(file = "../funcoes/diag_nbin.R")
+diag_nbin(modelo.binomialn.r, ozone)
+```
+
+Pelos gráficos de diagnóstico podemos concluir que o modelo binomial negativo mostrou-se adeaquado aos dados, inclusive seu ajuste foi melhor do que o ajuste do modelo Poisson. Não há pontos de alta influência, que poderiam causar problemas nas estimativas dos parâmetros. Portanto, escolhemos o modelo Binomial Negativo.
 
 
+# Interpretação dos parâmetros
 
-
-
+As variáveis humidade, temperatura e inversão da temperatura base geram um aumento na concentração de gás O3 na atmosfera, isto é, quanto maior a temperatura, humidade e inversão da temperatura, maior a concentração dde O3. A variável temperatura é a que tem maior impacto neste aumento. Já as variáveis altura da inversão da temperatura, visibilidade e dia do ano tem um impacto negativo nesta concentração. Tanto uma como as outras conforme aumentam, fazem com que a concentração de O3 diminua.
 
 
 
